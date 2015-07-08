@@ -36,6 +36,10 @@ $(document).ready(function () {
 
 var geocoder;
 var map;
+var drawingManager;
+var placeIdArray = [];
+var polylines = [];
+var snappedCoordinates = [];
 function initialize() {
     geocoder = new google.maps.Geocoder();
     var latlng = new google.maps.LatLng(-34.397, 150.644);
@@ -44,6 +48,96 @@ function initialize() {
         center: latlng
     }
     map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+    // Try HTML5 geolocation
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function (position) {
+            var pos = new google.maps.LatLng(position.coords.latitude,
+                position.coords.longitude);
+
+            map.setCenter(pos);
+        }, function () {
+            handleNoGeolocation(true);
+        });
+    } else {
+        // Browser doesn't support Geolocation
+        handleNoGeolocation(false);
+    }
+    runSnapToRoad();
+}
+
+function runSnapToRoad(path) {
+    var pathValues = [];
+    /*
+     pathValues.push("1.3896777,103.987625536019");
+     pathValues.push("1.3896777,103.9874997");
+     pathValues.push("1.3895477,103.9870333");
+     pathValues.push("1.3889236,103.9872226");
+     pathValues.push("1.3886291,103.987312");
+     pathValues.push("1.3882018,103.9873331");
+     */
+    $.get('/action/route', {}, function (data) {
+            var dat= JSON.parse(data).data;
+            for (var i = 0; i < dat.length; i++) {
+                pathValues.push(''+dat[i].lat + ',' + dat[i].long);
+                if(i==50)
+                    break;
+            }
+            $.get('https://roads.googleapis.com/v1/snapToRoads', {
+                interpolate: true,
+                key: 'AIzaSyDRU6iqHkIqWN315IE4i7tmGIIurf3MtrU',
+                path: pathValues.join('|')
+            }, function (data) {
+                console.log('Response for the server is ...' + data);
+                processSnapToRoadResponse(data);
+                drawSnappedPolyline();
+            });
+        }
+    );
+
+
+}
+// Store snapped polyline returned by the snap-to-road method.
+function processSnapToRoadResponse(data) {
+    snappedCoordinates = [];
+    placeIdArray = [];
+    for (var i = 0; i < data.snappedPoints.length; i++) {
+        var latlng = new google.maps.LatLng(
+            data.snappedPoints[i].location.latitude,
+            data.snappedPoints[i].location.longitude);
+        snappedCoordinates.push(latlng);
+        placeIdArray.push(data.snappedPoints[i].placeId);
+    }
+}
+var apiKey = 'AIzaSyDRU6iqHkIqWN315IE4i7tmGIIurf3MtrU';
+
+// Draws the snapped polyline (after processing snap-to-road response).
+function drawSnappedPolyline() {
+    var snappedPolyline = new google.maps.Polyline({
+        path: snappedCoordinates,
+        strokeColor: 'black',
+        strokeWeight: 3
+    });
+
+    snappedPolyline.setMap(map);
+    polylines.push(snappedPolyline);
+}
+
+
+function handleNoGeolocation(errorFlag) {
+    if (errorFlag) {
+        var content = 'Error: The Geolocation service failed.';
+    } else {
+        var content = 'Error: Your browser doesn\'t support geolocation.';
+    }
+
+    var options = {
+        map: map,
+        position: new google.maps.LatLng(60, 105),
+        content: content
+    };
+
+    var infowindow = new google.maps.InfoWindow(options);
+    map.setCenter(options.position);
 }
 
 function codeAddress(address) {
@@ -53,7 +147,7 @@ function codeAddress(address) {
             map.setCenter(results[0].geometry.location);
             var marker = new google.maps.Marker({
                 map: map,
-                zoom: 13,
+                zoom: 10,
                 position: results[0].geometry.location
             });
             // Construct the circle for each value in citymap.
