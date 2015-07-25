@@ -10,14 +10,15 @@ from django.shortcuts import render_to_response
 from django import http
 import pickle
 
-PRODUCT_INDEX = "yesgProductIndex"
-SHOP_INDEX = "yesgShopIndex"
+PRODUCT_INDEX = "ProductIndex"
+SHOP_INDEX = "ShopIndex"
+BLOCKTABLE_INDEX = "BlockTableIndex"
 
 def query(request):
     response = http.HttpResponse()
     response._headers['Content-Type'] = 'text/html'
     queryString = request.GET.__getitem__('queryString')
-    index = search.Index(name=PRODUCT_INDEX)
+    index = search.Index(name=BLOCKTABLE_INDEX)
     result=index.search(queryString)
     if not result.results:
         index = search.Index(name=SHOP_INDEX)
@@ -102,6 +103,39 @@ def refresh(request):
                         print "error while indexing.."
                 index += 1
         return http.HttpResponse();
+
+def blocktableupdate(request):
+    #Variables Definition
+     response = http.HttpResponse()
+     BlockTableData = []
+     index=1
+     response.write('Database Update in Progress...')
+
+     #Creating the Index Table
+     BlockTableIndex = search.Index(name=BLOCKTABLE_INDEX)
+     with open('data/PostalCode/BlockTable.csv', 'rU') as csvfile:
+         reader = csv.reader(csvfile)
+         for row in reader :
+            entry = models.Block_Table(Blk_PostalCode=int(row[0]), Blk_Name=row[1], Blk_BuildingType=row[2], Blk_Description=row[3], Blk_GeoLocation = db.GeoPt(float(row[4]), float(row[5])), Blk_Address = row[6], Blk_Phone = row[7], Blk_Email = row[8], Blk_Url=row[9], Blk_Image=row[10], Blk_Levels=row[11], Blk_Map=row[12], Blk_Size=row[13])
+            entry.put()
+            BlockTableData.append(search.Document(
+            fields=[
+                search.TextField(name='Blk_PostalCode', value=row[0]),
+                search.TextField(name='Blk_Name', value=row[1]),
+                search.TextField(name='Blk_Address', value=row[5]),
+                search.TextField(name='Blk_Phone', value=row[6]),
+                search.TextField(name='Blk_Email', value=row[7]),
+                ]))
+
+            try:
+                if index % 200 == 0:
+                   BlockTableIndex.put(BlockTableData)
+                   BlockTableData = []
+            except search.Error:
+                print "error while indexing.."
+         index += 1
+     index = 0
+     return http.HttpResponse();
 
 def refreshRoute(request):
      r = [];
