@@ -1,29 +1,37 @@
-# /*************************************************************************
+#  *************************************************************************
 #  *
-#  * SEVA BUDDY CONFIDENTIAL
+#  * DisQour Pte Ltd, Singapore
 #  * __________________
 #  *
-#  *  [2015] - [2015] Seva Buddy Pte Ltd Incorporated
+#  *  [2015] - [2015] DisQour Pte Ltd Incorporated
 #  *  All Rights Reserved.
 #  *
+# @(#)File:           $models.py$
+# @(#)Version:        $4.0$
+# @(#)Last changed:   $Date: 2015/07/26 01:33:00 $
+# @(#)Purpose:        Update of Header section
+# @(#)Author:         Suneel N.G.
+# @(#)Copyright:      (C) DisQour Pte Ltd 2015
+# ----------------------------------------------------------------------------------------
+# | Version Number   |  		User   			|    			Changes made 			|
+# ----------------------------------------------------------------------------------------
+# |                  |              			|                           			|
+# ----------------------------------------------------------------------------------------
+# | 2015/07/26, 4.0  | Suneel N. G.				| Update of Header section				|
+# ----------------------------------------------------------------------------------------
+# | 2015/07/26, 3.0  | Suneel N. G.				| Addition of Block_Table Model			|
+# ----------------------------------------------------------------------------------------
+#  * DisQour Pte Ltd CONFIDENTIAL
 #  * NOTICE:  All information contained herein is, and remains
-#  * the property of Seva Buddy Pte Ltd Incorporated and its suppliers,
+#  * the property of DisQour Pte Ltd Incorporated and its suppliers,
 #  * if any.  The intellectual and technical concepts contained
-#  * herein are proprietary to Seva Buddy Pte Ltd Incorporated
+#  * herein are proprietary to DisQour Pte Ltd Incorporated
 #  * and its suppliers and may be covered by Singapore and Foreign Patents,
 #  * patents in process, and are protected by trade secret or copyright law.
 #  * Dissemination of this information or reproduction of this material
 #  * is strictly forbidden unless prior written permission is obtained
-#  * from Seva Buddy Pte Ltd Incorporated.
-#  */
-#  /*
-# @(#)File:           $RCSfile: stderr.c,v $
-# @(#)Version:        $Revision: 8.29 $
-# @(#)Last changed:   $Date: 2008/06/02 13:00:00 $
-# @(#)Purpose:        Error reporting routines
-# @(#)Author:         abc
-# @(#)Copyright:      (C) SB Pte Ltd 2015
-# */
+#  * from DisQour Pte Ltd Incorporated.
+# ----------------------------------------------------------------------------------------
 
 
 from google.appengine.ext import ndb
@@ -72,8 +80,3 @@ class Product(db.Model):
 	  price = db.FloatProperty()
 	  address = db.StringProperty()
 	  location = db.GeoPtProperty()
-
-#Create a dummy instance now.
-#e = Employee(name="John", role="manager")
-#e.hire_date = datetime.datetime.now().date()
-#e.put()

@@ -66,7 +66,7 @@ MEDIA_URL = ''
 # Example: "/var/www/example.com/static/"
 PROJECT_DIR  = os.path.dirname(__file__)
 
-STATIC_ROOT = os.path.abspath(os.path.join(BASE_DIR, '..', 'hello/templates/../hello/static'))
+STATIC_ROOT = os.path.abspath(os.path.join(BASE_DIR, '..', 'config/templates/../config/static'))
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
@@ -116,7 +116,7 @@ TEMPLATE_DIRS = (
 )
 
 INSTALLED_APPS = (
-    'hello',
+    'config',
     'django.contrib.staticfiles'
 )
 
