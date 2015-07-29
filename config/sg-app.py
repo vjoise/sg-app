@@ -162,11 +162,12 @@ def blocktableupdate(request):
 
             try:
                 if index % 200 == 0:
+                   print str(index)
                    BlockTableIndex.put(BlockTableData)
                    BlockTableData = []
             except search.Error:
                 print "error while indexing.."
-         index += 1
+            index += 1
      index = 0
      return http.HttpResponse();
 
