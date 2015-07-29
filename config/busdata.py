@@ -124,9 +124,7 @@ def busroutetableupdate(request):
             #Route direction 1 is available
             for row_index in range(0,(route_items-1),1):
                 geo = json_data['1']['route'][row_index]
-                #entry.Brt_Serviceroute1 = ndb.GeoPt(float(geo.split(',')[0]), float(geo.split(',')[1]))
-#                entry[].Brt_Serviceroute1 = ndb.GeoPt(52.37, 4.88)
-                entry.Brt_Serviceroute1[1] = ndb.GeoPt(52.37, 4.88)
+                entry.Brt_Serviceroute1.append(ndb.GeoPt(float(geo.split(',')[0]), float(geo.split(',')[1])))
                 entry.put()
                 print str(row_index)
         row_index = 0
