@@ -49,7 +49,7 @@ from django.shortcuts import render_to_response
 from django import http
 import pickle
 from google.appengine.ext import ndb
-
+import glob, os
 
 
 #-----------------------------------------------------------------------------------------#
@@ -113,46 +113,41 @@ def busroutetableupdate(request):
     index=1
     row_index = 0
     route_items = 0
+    routelist_items = 0
+    routelist_index = 0
+    file_list = []
     response.write('Database(Busroute_Table) Update in Progress...')
 
-    with open('data/BusData/1N.json', 'rU') as data_file:
-        json_data = json.load(data_file)
-        entry = models.Busroute_Table(Brt_Serviceno = '1N')
-        route_items = len(json_data['1']['route'])
-        if route_items > 0:
-            #Route direction 1 is available
-            for row_index in range(0,(route_items-1),1):
-                geo = json_data['1']['route'][row_index]
-                entry.Brt_Serviceroute1.append(ndb.GeoPt(float(geo.split(',')[0]), float(geo.split(',')[1])))
-                entry.put()
-                print str(row_index)
-        row_index = 0
-        route_items = len(json_data['2']['route'])
-        if route_items > 0:
-            #Route direction 1 is available
-            for row_index in range(0,(route_items-1),1):
-                entry.Brt_Serviceroute2 = json_data['2']['route'][row_index]
-                entry.put()
-        # for row in reader :
-        #     if bus_row_index > 0 :
-        #         entry = models.Busstop_Table(Bst_Number=row[0], Bst_Name=row[3], Bst_Position = db.GeoPt(float(row[1]), float(row[2])))
-        #         entry.put()
-        #         BusStopTableData.append(search.Document(
-        #         fields=[
-        #             search.TextField(name='Bst_Number', value=row[0]),
-        #             search.TextField(name='Bst_Name', value=row[3]),
-        #             ]))
-        #         try:
-        #             if index % 200 == 0 :
-        #                print str(index)
-        #                BusstopTableIndex.put(BusStopTableData)
-        #                BusStopTableData = []
-        #         except search.Error:
-        #             print "error while indexing.."
-        #         index += 1
-        #     bus_row_index += 1
-        # BusstopTableIndex.put(BusStopTableData)
-        print json_data['1']['route'][0]
-        print len(json_data)
-        print len(json_data(0))
+    #Listing *.json files from the directory
+    for files in os.listdir("data/BusData/"):
+        if files.endswith('.json'):
+            file_list.append(files)
+
+    # Length of total number of files in the directory
+    routelist_items = len(file_list)
+    if routelist_items > 0:
+        # One or more files
+        for routelist_index in range(0, (routelist_items - 1), 1):
+            # Open the json file
+            with open('data/BusData/'+file_list[routelist_index], 'rU') as data_file:
+                json_data = json.load(data_file)
+                entry = models.Busroute_Table(Brt_Serviceno = str(file_list[routelist_index].split('.')[0]))
+                # Route Direction 1
+                route_items = len(json_data['1']['route'])
+                if route_items > 0:
+                    #Route direction 1 is available
+                    for row_index in range(0,(route_items-1),1):
+                        #entry.Brt_Serviceroute1.append(ndb.GeoPt(float(geo.split(',')[0]), float(geo.split(',')[1])))
+                        entry.Brt_Serviceroute1.append(ndb.GeoPt(json_data['1']['route'][row_index]))
+                        entry.put()
+                        print str(row_index)
+
+                # Route Direction 2
+                row_index = 0
+                route_items = len(json_data['2']['route'])
+                if route_items > 0:
+                    #Route direction 2 is available
+                    for row_index in range(0,(route_items-1),1):
+                        entry.Brt_Serviceroute2.append(ndb.GeoPt(json_data['2']['route'][row_index]))
+                        entry.put()
     return http.HttpResponse();
