@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/sg-app.iml" filepath="$PROJECT_DIR$/.idea/sg-app.iml" />
-      <module fileurl="file://$USER_HOME$/Downloads/sg-app/.idea/sg-app.iml" filepath="$USER_HOME$/Downloads/sg-app/.idea/sg-app.iml" />
     </modules>
   </component>
 </project>

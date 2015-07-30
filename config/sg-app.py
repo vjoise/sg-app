@@ -62,7 +62,10 @@ def query(request):
     for r in result.results :
         fields = []
         for s in r.fields :
-                fields.append({'name' : s.name, 'value' : s.value});
+            value=s.value
+            if type(value) is search.GeoPoint:
+                value = str(s.value.latitude) + "," + str(s.value.longitude)
+            fields.append({'name' : s.name, 'value' : value});
         returnResult.append({'fields' : fields})
     root = {
         'data' : returnResult
@@ -162,13 +165,13 @@ def blocktableupdate(request):
 
             try:
                 if index % 200 == 0:
-                   print str(index)
+                   print "Commiting index for " + str(index)
                    BlockTableIndex.put(BlockTableData)
                    BlockTableData = []
             except search.Error:
                 print "error while indexing.."
-            index += 1
-     index = 0
+            index +=1
+         index = 0
      return http.HttpResponse();
 
 def refreshRoute(request):
