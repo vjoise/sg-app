@@ -118,7 +118,6 @@ def busroutetableupdate(request):
     with open('data/BusData/1N.json', 'rU') as data_file:
         json_data = json.load(data_file)
         entry = models.Busroute_Table(Brt_Serviceno = '1N')
-        entry.put()
         route_items = len(json_data['1']['route'])
         if route_items > 0:
             #Route direction 1 is available
