@@ -109,7 +109,6 @@ def busstoptableupdate(request):
 def busroutetableupdate(request):
     #Variables Definition
     response = http.HttpResponse()
-    busroutetabledata = []
     index=1
     row_index = 0
     route_items = 0
@@ -140,7 +139,6 @@ def busroutetableupdate(request):
                         #entry.Brt_Serviceroute1.append(ndb.GeoPt(float(geo.split(',')[0]), float(geo.split(',')[1])))
                         entry.Brt_Serviceroute1.append(ndb.GeoPt(json_data['1']['route'][row_index]))
                         entry.put()
-                        print str(row_index)
 
                 # Route Direction 2
                 row_index = 0
